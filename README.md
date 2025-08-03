@@ -28,7 +28,7 @@ A web-based dashboard for real-time **stock analysis**, **price visualization**,
 
 ## 📸 Screenshot
 
-![Dashboard Screenshot](images/dashboard.png)
+![Dashboard Screenshot](Images/Dashboard.png)
 
 ---
 
