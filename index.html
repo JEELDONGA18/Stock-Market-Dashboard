@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Message container for user feedback -->
+    <div id="messageContainer"></div>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <i class="fas fa-bars menu-toggle"></i>
+            <h1 class="nav-title" id="navTitle">Stock Analysis Dashboard</h1>
+        </div>
+        <div class="nav-right">
+            <button class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Website
+            </button>
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <a href="#" class="sidebar-item active" data-title="Stock Analysis Dashboard" data-target="stockAnalysisContainer">
+            <i class="fas fa-chart-line"></i>
+            <span>Stock Analysis</span>
+        </a>
+        <a href="#" class="sidebar-item" data-title="Future Forecasting Dashboard" data-target="futureForecastingContainer">
+            <i class="fas fa-forward"></i>
+            <span>Future Forecasting</span>
+        </a>
+        <a href="#" class="sidebar-item" data-title="News Dashboard" data-target="newsContainer">
+            <i class="fas fa-newspaper"></i>
+            <span>News</span>
+        </a>
+    </div>
+
+    <!-- Main content area -->
+    <div class="search-container" id="mainSearchContainer">
+        <input type="text" id="stockInput" placeholder="Enter company name or ticker">
+        <i class="fas fa-search search-icon"></i>
+    </div>
+
+    <!-- Stock Analysis Container -->
+    <div id="stockAnalysisContainer" class="content-container active">
+        <div class="buttons">
+            <button data-interval="1min" onclick="updateTimeframe('1min')">1 Hour</button>
+            <button data-interval="5min" onclick="updateTimeframe('15min')">1 Day</button>
+            <button data-interval="60min" onclick="updateTimeframe('60min')">5 Days</button>
+            <button data-interval="1day" onclick="updateTimeframe('1day')">1 Month</button>
+            <button data-interval="1day" onclick="updateTimeframe('1day', null, '3month')">3 Months</button>
+            <button data-interval="1week" onclick="updateTimeframe('1week')">6 Months</button>
+            <button data-interval="1week" onclick="updateTimeframe('1week', null, '1year')">1 Year</button>
+            <button data-interval="1month" onclick="updateTimeframe('1month', null, '4year')">4 Years</button>
+            <button data-interval="1month" onclick="updateTimeframe('1month', null, '8year')">8 Years</button>
+        </div>
+        
+        <div class="chart-container">
+            <!-- Main Trading View Section -->
+            <div class="trading-view">
+                <!-- Candlestick Chart -->
+                <div class="main-chart">
+                    <canvas id="candlestickChart"></canvas>
+                </div>
+                
+                <!-- Volume Chart -->
+                <div class="volume-chart">
+                    <canvas id="volumeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Secondary Charts Section -->
+            <div class="secondary-charts">
+                <!-- Line Trend Chart -->
+                <div class="trend-chart">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                
+                <!-- Price Range Chart -->
+                <div class="range-chart">
+                    <canvas id="rangeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Stats Panel -->
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <h3>Current Price</h3>
+                    <p id="currentPrice">$0.00</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Day's Range</h3>
+                    <p id="dayRange">$0.00 - $0.00</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Volume</h3>
+                    <p id="volume">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Change</h3>
+                    <p id="priceChange">0.00%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div class="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Future Forecasting Container -->
+    <div id="futureForecastingContainer" class="content-container">
+        <div class="search-container" id="forecastSearchContainer" style="display: flex !important;">
+            <input type="text" id="forecastInput" placeholder="Enter company name or ticker for forecast">
+            <i class="fas fa-search forecast-search-icon"></i>
+        </div>
+
+        <div class="forecast-buttons">
+            <button data-interval="1min">1 Hour</button>
+            <button data-interval="5min">1 Day</button>
+            <button data-interval="60min">5 Days</button>
+            <button data-interval="1day">1 Month</button>
+            <button data-interval="1week">6 Months</button>
+            <button data-interval="1month">1 Year</button>
+        </div>
+        
+        <div class="chart-container">
+            <!-- Loading bar with status messages -->
+            <div id="loadingContainer">
+                <div class="loading-text">
+                    <span class="progress-text">0%</span>
+                    <span class="status-text"></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+            <div class="main-chart">
+                <canvas id="forecastChart"></canvas>
+            </div>
+            
+            <!-- Add stats panel for forecast -->
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <h3>Predicted Price</h3>
+                    <p id="predictedPrice">$0.00</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Prediction Range</h3>
+                    <p id="predictionRange">$0.00 - $0.00</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Confidence Level</h3>
+                    <p id="confidenceLevel">0%</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Predicted Change</h3>
+                    <p id="predictedChange">0.00%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Container -->
+    <div id="newsContainer" class="content-container">
+        <div class="news-grid">
+            <!-- News cards will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
